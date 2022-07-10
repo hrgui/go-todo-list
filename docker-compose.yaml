@@ -7,6 +7,8 @@ services:
     build:
       context: ./packages/todo-rest-api/
       dockerfile: ./docker/todo-rest-api-dev.Dockerfile
+    volumes:
+      - ./packages/todo-rest-api/:/app
     ports:
       - "4000:3000"
   postgres:
