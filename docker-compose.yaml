@@ -5,10 +5,10 @@ networks:
 services:
   rest-api:
     build:
-      context: ./
-      dockerfile: ./packages/todo-rest-api/docker/todo-rest-api-dev.Dockerfile
+      context: ./packages/todo-rest-api/
+      dockerfile: ./docker/todo-rest-api-dev.Dockerfile
     ports:
-      - "8000:5000"
+      - "4000:3000"
   postgres:
     image: postgres:12
     restart: always
@@ -18,3 +18,5 @@ services:
       POSTGRES_PASSWORD: postgrespassword
     networks:
       - backend
+volumes:
+  db_data:
