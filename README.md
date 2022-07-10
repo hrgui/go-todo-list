@@ -67,7 +67,9 @@ Update Todo
 
 Delete Todo
 
-# How I learned all this
+# How I learned all this / or reviewed
 
 - https://docs.gofiber.io/
 - https://medium.com/easyread/today-i-learned-golang-live-reload-for-development-using-docker-compose-air-ecc688ee076
+- https://chartio.com/resources/tutorials/how-to-list-databases-and-tables-in-postgresql-using-psql/
+- https://x-team.com/blog/automatic-timestamps-with-postgresql/
