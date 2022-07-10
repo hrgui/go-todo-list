@@ -73,3 +73,5 @@ Delete Todo
 - https://medium.com/easyread/today-i-learned-golang-live-reload-for-development-using-docker-compose-air-ecc688ee076
 - https://chartio.com/resources/tutorials/how-to-list-databases-and-tables-in-postgresql-using-psql/
 - https://x-team.com/blog/automatic-timestamps-with-postgresql/
+- https://blog.logrocket.com/building-simple-app-go-postgresql/ (this tutorial has some issues when the DB schema is just more than 1 column)
+- https://go.dev/doc/database/querying

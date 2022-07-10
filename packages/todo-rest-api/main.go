@@ -2,7 +2,9 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 	_ "github.com/lib/pq"
@@ -24,7 +26,7 @@ func listTodos(c *fiber.Ctx, db *sql.DB) error {
 	// close the rows, prevent further enumeration
 	defer rows.Close()
 
-	// check if there are errors
+	// TODO error handling is naive here
 	if err != nil {
 		log.Fatalln(err)
 		return c.JSON("An error occurred")
@@ -39,8 +41,18 @@ func listTodos(c *fiber.Ctx, db *sql.DB) error {
 	return c.JSON(todos)
 }
 
-func getTodoById(c *fiber.Ctx) error {
-	return c.SendString("Hello, World!")
+func getTodoById(c *fiber.Ctx, db *sql.DB) error {
+	todo := Todo{}
+
+	row := db.QueryRow("SELECT id, title, completed FROM todos WHERE id = ($1)", c.Params("id"))
+
+	err := row.Scan(&todo.Id, &todo.Title, &todo.Completed)
+
+	if err != nil && err == sql.ErrNoRows {
+		return c.SendStatus(404)
+	}
+
+	return c.JSON(todo)
 }
 
 func createTodo(c *fiber.Ctx) error {
@@ -70,10 +82,16 @@ func main() {
 	app.Get("/todos", func (c *fiber.Ctx) error {
 		return listTodos(c, db)
 	})
-	app.Get("/todo/:id", getTodoById)
+	app.Get("/todo/:id", func (c *fiber.Ctx) error {
+		return getTodoById(c, db)
+	})
 	app.Post("/todo", createTodo)
 	app.Put("/todo/:id", updateTodo)
 	app.Delete("/todo/:id", deleteTodo)
 
-	app.Listen(":3000")
+	port := os.Getenv("PORT")
+	if port == "" {
+			port = "3000"
+	}
+	app.Listen(fmt.Sprintf(":%v", port))
 }
