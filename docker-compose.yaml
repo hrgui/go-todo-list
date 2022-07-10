@@ -11,6 +11,8 @@ services:
       - ./packages/todo-rest-api/:/app
     ports:
       - "4000:3000"
+    networks:
+      - backend
   postgres:
     image: postgres:12
     restart: always
