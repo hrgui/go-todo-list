@@ -18,7 +18,7 @@ type Todo struct {
 
 
 func listTodos(c *fiber.Ctx, db *sql.DB) error {
-	var todos []Todo
+	todos := []Todo{}
 	// return c.SendString("Hello, Worldo!")
 	// query the db
 	rows, err := db.Query("SELECT id, title, completed FROM todos ORDER BY id ASC")
