@@ -55,16 +55,39 @@ func getTodoById(c *fiber.Ctx, db *sql.DB) error {
 	return c.JSON(todo)
 }
 
-func createTodo(c *fiber.Ctx) error {
-	return c.SendString("Hello, World!")
+func createTodo(c *fiber.Ctx, db *sql.DB) error {
+	newTodo := Todo{}
+
+	if err := c.BodyParser(&newTodo); err != nil {
+		log.Printf("An error occured: %v", err)
+		return c.SendString(err.Error())
+	}
+	fmt.Printf("%v", newTodo)
+
+	row := db.QueryRow("INSERT into todos (title) VALUES ($1) RETURNING id, title, completed", newTodo.Title)
+	row.Scan(&newTodo.Id, &newTodo.Title, &newTodo.Completed)
+
+	return c.JSON(newTodo)
 }
 
-func updateTodo(c *fiber.Ctx) error {
-	return c.SendString("Hello, World!")
+func updateTodo(c *fiber.Ctx, db *sql.DB) error {
+	newTodo := Todo{}
+	if err := c.BodyParser(&newTodo); err != nil {
+		log.Printf("An error occured: %v", err)
+		return c.SendString(err.Error())
+	}
+	fmt.Printf("new todo: %v", newTodo)
+
+	row := db.QueryRow("UPDATE todos SET title=($1), completed=($2) WHERE id=($3) RETURNING id, title, completed", newTodo.Title, newTodo.Completed, newTodo.Id)
+	row.Scan(&newTodo.Id, &newTodo.Title, &newTodo.Completed)
+
+	return c.JSON(newTodo)
 }
 
-func deleteTodo(c *fiber.Ctx) error {
-	return c.SendString("Hello, World!")
+func deleteTodo(c *fiber.Ctx, db *sql.DB) error {
+	db.QueryRow("DELETE FROM todos WHERE id=($1)", c.Params("id"))
+
+	return c.SendStatus(204)
 }
 
 
@@ -85,9 +108,16 @@ func main() {
 	app.Get("/todo/:id", func (c *fiber.Ctx) error {
 		return getTodoById(c, db)
 	})
-	app.Post("/todo", createTodo)
-	app.Put("/todo/:id", updateTodo)
-	app.Delete("/todo/:id", deleteTodo)
+	app.Post("/todo", func (c *fiber.Ctx) error {
+		return createTodo(c, db)
+	})
+	app.Put("/todo/:id", func (c *fiber.Ctx) error {
+		return updateTodo(c, db)
+	})
+
+	app.Delete("/todo/:id", func (c *fiber.Ctx) error {
+		return deleteTodo(c, db)
+	})
 
 	port := os.Getenv("PORT")
 	if port == "" {
