@@ -1,27 +1,30 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
+import { deleteTodo, updateTodo } from "../api-client/todo";
 
+const emit = defineEmits(["onTodoDeleted"]);
 const props = defineProps<{ title: string; id: number; completed: boolean }>();
 const isEditing = ref(false);
 const isCompleted = ref(props.completed);
 
 const todoNonEditClass = ref(isCompleted.value ? "title-completed" : "title-non-edit");
 
-function onToggleCompleted() {
-  //TODO: Need to run the update (save)
+async function handleToggleCompleted() {
+  await updateTodo({ title: props.title, completed: isCompleted.value, id: props.id });
   todoNonEditClass.value = isCompleted.value ? "title-completed" : "title-non-edit";
 }
 
-watch(isCompleted, onToggleCompleted);
+watch(isCompleted, handleToggleCompleted);
 
-function onSave() {
-  alert(`TODO: todo will be saved with ${props.title} ${props.id}`);
+async function handleSave() {
+  await updateTodo({ title: props.title, completed: props.completed, id: props.id });
   isEditing.value = false;
 }
 
-function onDelete() {
-  alert(`TODO: todo will be deleted ${props.id}`);
+async function handleDelete() {
+  await deleteTodo(props.id);
   isEditing.value = false;
+  emit("onTodoDeleted", props);
 }
 </script>
 
@@ -29,8 +32,8 @@ function onDelete() {
   <div class="container">
     <div class="title">
       <input type="text" v-model="title" v-if="isEditing" />
-      <button v-if="isEditing" @click="onSave">Save</button>
-      <button v-if="isEditing" @click="onDelete">Delete</button>
+      <button v-if="isEditing" @click="handleSave">Save</button>
+      <button v-if="isEditing" @click="handleDelete">Delete</button>
       <button
         :title="`Edit ${title}`"
         :class="todoNonEditClass"

@@ -15,11 +15,19 @@ function handleTodoAdded(todo: Todo) {
   todosData.value.push(todo);
 }
 
+function handleTodoDeleted(todo: Todo) {
+  todosData.value = todosData.value.filter((t) => t.id !== todo.id);
+}
+
 fetchData();
 </script>
 
 <template>
-  <TodoList :todos="todosData" @on-todo-added="(todo) => handleTodoAdded(todo)" />
+  <TodoList
+    :todos="todosData"
+    @on-todo-added="(todo) => handleTodoAdded(todo)"
+    @on-todo-deleted="(todo) => handleTodoDeleted(todo)"
+  />
 </template>
 
 <style>
