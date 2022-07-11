@@ -1,21 +1,25 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { listTodos } from "./api-client/todo";
 import TodoList from "./components/TodoList.vue";
-import { Todo as TodoType } from "./types";
+import { Todo, Todo as TodoType } from "./types";
 
 const todosData = ref<TodoType[]>([]);
 
 async function fetchData() {
   todosData.value = [];
-  const res = await fetch(`https://jsonplaceholder.typicode.com/todos`);
-  todosData.value = await res.json();
+  todosData.value = await listTodos();
+}
+
+function handleTodoAdded(todo: Todo) {
+  todosData.value.push(todo);
 }
 
 fetchData();
 </script>
 
 <template>
-  <TodoList :todos="todosData" />
+  <TodoList :todos="todosData" @on-todo-added="(todo) => handleTodoAdded(todo)" />
 </template>
 
 <style>

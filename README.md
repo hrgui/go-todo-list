@@ -12,9 +12,22 @@ Todo List in Go and in Vue.
 
 ## You'll need / Prerequisites
 
+- node.js v16 + yarn
 - docker
 
-## How to run
+## How to run - UI
+
+```
+yarn
+```
+
+```
+yarn dev
+```
+
+## How to run - API
+
+In root directory,
 
 ```
 docker-compose up -d
